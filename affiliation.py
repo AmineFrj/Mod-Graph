@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import tqdm
 try:
-	all_auteurs = pd.read_csv("Liste_Auteurs_affiliation_photo.csv", sep=";")
+	all_auteurs = pd.read_csv("data/Liste_Auteurs_affiliation_photo.csv", sep=";")
 except e:
 	print("Le csv doit s'appeler : 'Liste_Auteurs_affiliation_photo.csv'")
 	exit(-1)
