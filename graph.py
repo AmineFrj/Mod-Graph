@@ -7,15 +7,12 @@ Original file is located at
     https://colab.research.google.com/drive/1mVEniof6NTjsLdJ1xgFBkZXKydgpaXeK
 """
 
-! sudo apt-get install metis
-
-! pip install Cluster_Ensembles
 
 import numpy as np
 import matplotlib.pyplot as plt
 from random import choice
-import community as cm
 import networkx as nx
+import community
 
 
 import Cluster_Ensembles as CE
@@ -23,8 +20,8 @@ import Cluster_Ensembles as CE
 import pandas as pd 
   
   # reading csv file  
-article = pd.read_csv("article.csv", sep="\t")
-auteur =  pd.read_csv("auteur.csv", sep = ";")
+article = pd.read_csv("/Users/amine/Downloads/Mod-Graph-master/data/article.csv", sep="\t")
+auteur =  pd.read_csv("/Users/amine/Downloads/Mod-Graph-master/data/auteur.csv", sep = ";")
 
 article.describe()
 
@@ -54,11 +51,71 @@ for x in article["authors"]:
       docAut.ix[i,j] =1 
   i+=1
 
-docAut
+#docAut
+#docAut.sum()
 
-docAut.sum()
+#docAut.to_csv("docAut.csv", sep=';')
 
-docAut.to_csv("docAut.csv", sep='\t')
+docAutTransposé = np.transpose(docAut)
+co_Auteur = docAutTransposé.dot(docAut)
 
+matCo_Auteur = co_Auteur.to_numpy()
 
+plt.spy(matCo_Auteur)
+plt.show()
 
+graph = nx.from_numpy_matrix(matCo_Auteur)
+
+nx.draw(graph)
+plt.title("graphe")
+plt.show()
+
+partition = community.best_partition(graph)
+#print("partition", partition)
+
+# Calcule de modularité
+modularite_value = community.modularity(partition,graph)
+print("modularity_value", modularite_value)
+# Visu du nombre de communautés retrouvés
+vect_label = set(partition.values())
+print("vect_label", vect_label)
+
+size = int(len(set(partition.values())))
+print("size", size)
+# genere un vecteur de couleur
+colors = ["#"+''.join([choice('0123456789ABCDEF')for j in range(6)])for i in range(size)]
+
+# Affichage du graphe
+pos = nx.spring_layout(graph)
+count = 0
+for com in set(partition.values()):
+    list_nodes = [nodes for nodes in partition.keys() if partition[nodes]==com]
+    nx.draw_networkx_nodes(graph,pos,list_nodes,node_size = 20, node_color=colors[count])
+    count += 1
+nx.draw_networkx_edges(graph, pos, alpha=0.5)
+plt.axis("off")
+plt.show()
+
+#Reorganisation de la matrice
+clustering1 = np.asarray(list(partition.values()))
+index = np.argsort(clustering1)
+
+partition.values()
+index
+
+matCo_Auteur2 = matCo_Auteur[index,:]
+matCo_Auteur2 = matCo_Auteur2[:,index]
+
+graph2 = nx.from_numpy_matrix(matCo_Auteur2)
+partition2 = community.best_partition(graph2)
+
+# Affichage du graphe
+pos = nx.spring_layout(graph2)
+count = 0
+for com in set(partition2.values()):
+    list_nodes = [nodes for nodes in partition2.keys() if partition2[nodes]==com]
+    nx.draw_networkx_nodes(graph2,pos,list_nodes,node_size = 20, node_color=colors[count])
+    count += 1
+nx.draw_networkx_edges(graph2, pos, alpha=0.5)
+plt.axis("off")
+plt.show()
