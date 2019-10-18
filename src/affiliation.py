@@ -27,16 +27,17 @@ def generate_affiliation_coaffiliation(auteurs_csv_path = "data/Liste_Auteurs_af
         auteurs_affiliation.ix[i, auth[1].Affiliation] = 1
         auteurs_affiliation = auteurs_affiliation.rename(index={i: auth[1].Authors_Name})
 
-    print("Saving result of affiliation matrix as auteurs_affiliation.csv")
+    auteurs_affiliation_path = "data/results/auteur_affiliation.hdf"
+    print(f"Saving result of affiliation matrix as {auteurs_affiliation_path}")
 
-    auteurs_affiliation.to_csv("data/results/auteur_affiliation.csv")
+    auteurs_affiliation.to_hdf(auteurs_affiliation_path, "auteurs_affiliation")
 
     co_affiliation = auteurs_affiliation.dot(auteurs_affiliation.T)
 
-    co_affiliation.to_csv("data/results/co_affiliation.csv")
+    co_affiliation.to_hdf("data/results/co_affiliation.hdf", "co_affiliation")
+
     return co_affiliation
 
 if __name__ == "__main__":
     co_affiliation = generate_affiliation_coaffiliation()
-
     generate_graph(co_affiliation)
