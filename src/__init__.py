@@ -1,0 +1,5 @@
+from .affiliation import generate_affiliation_coaffiliation
+from .graph import generate_document_auteurs
+from .matrice_docs_terms import generate_doc_terms
+
+from .generate_graphs import generate_graph
